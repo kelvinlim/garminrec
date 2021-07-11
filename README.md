@@ -14,5 +14,5 @@ This app also serves the information required by garmin.
 sudo docker build -t garminrec .
 
 # run the container at port 5005
-sudo docker run -d -p 5005:5005 garminrec
+sudo docker run -d -p 5005:5005 --restart unless-stopped garminrec
 ```
