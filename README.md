@@ -16,3 +16,14 @@ sudo docker build -t garminrec .
 # run the container at port 5005
 sudo docker run -d -p 5005:5005 --restart unless-stopped garminrec
 ```
+## software installation of authlib
+```
+pip install Authlib Flask
+```
+
+## for oauthlib
+```
+pip install requests_oauthlib
+pip install flask_oauthlib
+
+```
