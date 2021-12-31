@@ -18,6 +18,7 @@ sudo docker run -d -p 5005:5005 --restart unless-stopped garminrec
 ```
 ## software installation of authlib
 ```
+pip install --upgrade pip
 pip install Authlib Flask
 ```
 
