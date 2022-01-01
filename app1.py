@@ -1,8 +1,9 @@
-from flask import Flask, render_template, url_for, send_file, request
+from flask import Flask, render_template, url_for, send_file, request, Response
 
 import requests_oauthlib
 from dotenv import load_dotenv
 import os
+import json
 #import requests
 
 # Using OAuth1Session
@@ -90,6 +91,7 @@ def callback():
    
    oauth_tokens = oauth.fetch_access_token(access_token_url)
    
+   # user access token is oauth_tokens['oauth_token']
    """
    return(
    '<p>  Verifier {}</p>'.format(
@@ -102,7 +104,28 @@ def callback():
 def icon():
    #return send_file(url_for('static', filename='z_150_icon.png'))
    #return send_file('static/z_150_icon.png')
-   return send_file('static/UMN_M-wdmk-stack-D2D-maroon-blk.png')
+   mnfile = 'static/UMN_M-wdmk-stack-D2D-maroon-blk.png'
+   return send_file(mnfile)
+
+@app.route('/epochs', methods=['POST'])
+def epochs():
+   # receive data from garmin epochs
+   req = request.get_json()
+   print(req)
+   pass
+   return Response("OK", status=200, mimetype='application/json' )
+   #return 'json example'
+
+@app.route('/sleeps', methods=['POST'])
+def sleeps():
+   # receive data from garmin epochs
+   req = request.get_json()
+   print(req)
+   pass
+   return Response("OK", status=200, mimetype='application/json' )
+   #return 'json example'
+
+
 # change port
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5005)

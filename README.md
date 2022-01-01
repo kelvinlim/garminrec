@@ -32,3 +32,8 @@ pip install flask_oauthlib
 ## reference materials for using mysql with json
 
 https://www.digitalocean.com/community/tutorials/working-with-json-in-mysql
+
+sqlalchemy
+
+https://pypi.org/project/sqlalchemy-json/
+
