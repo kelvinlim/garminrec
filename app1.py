@@ -21,6 +21,10 @@ client_secret = os.getenv('client_secret')
 
 oauth = OAuth1Session(client_key, client_secret=client_secret)
 
+# setup the db
+from db import Db
+db = Db()
+
 app = Flask(__name__)
 
 # initialize globals
@@ -92,6 +96,10 @@ def callback():
    oauth_tokens = oauth.fetch_access_token(access_token_url)
    
    # user access token is oauth_tokens['oauth_token']
+
+   # load this info into the accounts table if it doesn't already exist
+   db.check_uat(oauth_tokens['oauth_token'],oauth_tokens['oauth_token_secret'])
+
    """
    return(
    '<p>  Verifier {}</p>'.format(
