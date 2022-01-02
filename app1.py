@@ -100,6 +100,9 @@ def callback():
    # load this info into the accounts table if it doesn't already exist
    db.check_uat(oauth_tokens['oauth_token'],oauth_tokens['oauth_token_secret'])
 
+   # set register flag 1 (True)
+   db.register_uat(oauth_tokens['oauth_token'], register=1)
+
    """
    return(
    '<p>  Verifier {}</p>'.format(
@@ -115,23 +118,82 @@ def icon():
    mnfile = 'static/UMN_M-wdmk-stack-D2D-maroon-blk.png'
    return send_file(mnfile)
 
+###
+### routes for each of the data endpoints
+###
+
+@app.route('/activities', methods=['POST'])
+def activities():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/activitydetails', methods=['POST'])
+def activitydetails():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/dailies', methods=['POST'])
+def dailies():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/deregistrations', methods=['POST'])
+def deregistrations():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   # set register flag 0 (False)
+   uat = req['deregistrations'][0]['userAccessToken']
+   db.register_uat(uat, register=0)
+   return Response("OK", status=200, mimetype='application/json' )
+
 @app.route('/epochs', methods=['POST'])
 def epochs():
-   # receive data from garmin epochs
+   # receive data from garmin 
    req = request.get_json()
-   print(req)
-   pass
+   db.add_raw_data(req)
    return Response("OK", status=200, mimetype='application/json' )
-   #return 'json example'
+
+@app.route('/healthsnapshot', methods=['POST'])
+def healthsnapshot():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/pulseox', methods=['POST'])
+def pulseox():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/respiration', methods=['POST'])
+def respiration():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/sleeps', methods=['POST'])
 def sleeps():
-   # receive data from garmin epochs
+   # receive data from garmin 
    req = request.get_json()
-   print(req)
-   pass
+   db.add_raw_data(req)
    return Response("OK", status=200, mimetype='application/json' )
-   #return 'json example'
+
+@app.route('/stress', methods=['POST'])
+def stress():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
 
 
 # change port

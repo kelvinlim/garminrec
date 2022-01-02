@@ -15,6 +15,9 @@ sudo docker build -t garminrec .
 
 # run the container at port 5005
 sudo docker run -d -p 5005:5005 --restart unless-stopped garminrec
+
+# to run without detached mode for testing with db running on localhost
+sudo docker run --network=host -p 5005:5005 garminrec
 ```
 ## software installation of authlib
 ```
@@ -37,3 +40,47 @@ sqlalchemy
 
 https://pypi.org/project/sqlalchemy-json/
 
+Links for different resources on garmin
+https://www.programmableweb.com/api/garmin-connect-rest-api
+
+link for garmin instructions on how to remove third-party site access from garmin
+connect account
+
+https://support.garmin.com/en-US/?faq=J1LFILJV3z7SGvwIIb95X6
+
+
+
+## using environment variables when building docker containers
+https://stackoverflow.com/questions/19537645/get-environment-variable-value-in-dockerfile
+
+In dockerfile
+
+ARG requestdomain
+
+Access it
+
+ENV requestdomain=$requestdomain
+
+pass it during build
+
+docker build --build-arg request_domain=mydomain Dockerfile
+
+## how to use .env to set env variable in shell
+
+Entries in the .env file have to be like this:
+
+db_name=garmindb
+
+https://stackoverflow.com/questions/43267413/shell-how-to-set-environment-variables-from-env-file
+
+https://stackoverflow.com/questions/61693804/dockerfile-is-there-any-way-to-read-variables-from-env-file
+
+set -a # automatically export all variables
+source .env
+set +a
+
+## accessing mysql on localhost from container
+https://www.cloudsavvyit.com/14114/how-to-connect-to-localhost-within-a-docker-container/
+
+This allows access to localhost from container
+*** docker run -d --network=host my-container:latest
