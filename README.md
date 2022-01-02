@@ -87,3 +87,7 @@ This allows access to localhost from container
 
 ## how to add form in Flask - use this for callback in order to add a subject_id
 https://python-adv-web-apps.readthedocs.io/en/latest/flask_forms.html
+
+## sqlalchemy info
+https://flask-sqlalchemy.palletsprojects.com/en/2.x/models/#
+
