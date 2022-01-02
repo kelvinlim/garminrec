@@ -84,3 +84,6 @@ https://www.cloudsavvyit.com/14114/how-to-connect-to-localhost-within-a-docker-c
 
 This allows access to localhost from container
 *** docker run -d --network=host my-container:latest
+
+## how to add form in Flask - use this for callback in order to add a subject_id
+https://python-adv-web-apps.readthedocs.io/en/latest/flask_forms.html
