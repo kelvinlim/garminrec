@@ -19,7 +19,7 @@ access_token_url = 'https://connectapi.garmin.com/oauth-service/oauth/access_tok
 client_key = os.getenv('client_key')
 client_secret = os.getenv('client_secret')
 
-oauth = OAuth1Session(client_key, client_secret=client_secret)
+
 
 # setup the db
 from db import Db
@@ -38,6 +38,7 @@ def index():
 
    global resource_owner_key, resource_owner_secret, request_token_url,base_authorization_url
 
+   oauth = OAuth1Session(client_key, client_secret=client_secret)
    fetch_response = oauth.fetch_request_token(request_token_url)
 
    resource_owner_key = fetch_response.get('oauth_token')

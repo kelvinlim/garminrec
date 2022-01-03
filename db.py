@@ -25,7 +25,7 @@ class Db:
 
         # create the engine
         self.create_engine()
-        self.create_tables()
+        self.create_tables()  # ok to run it since if tables exists it does nothing
         pass
 
     def test1(self):
@@ -164,7 +164,7 @@ class Db:
         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # convert python object back into json
-        json_object = json.dumps(jd)
+        json_object = json.dumps(jd, indent=4)
         conn = self.engine.connect()
 
         sql = f"insert into garmindata (userid, uat, datatype,created_at, d) \
