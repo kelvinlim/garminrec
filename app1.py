@@ -36,7 +36,7 @@ resource_owner_secret = ''
 @app.route("/")
 def index():
 
-   global resource_owner_key, resource_owner_secret
+   global resource_owner_key, resource_owner_secret, request_token_url,base_authorization_url
 
    fetch_response = oauth.fetch_request_token(request_token_url)
 
@@ -60,7 +60,7 @@ def privacy():
 @app.route("/callback")
 def callback():
 
-   global resource_owner_key, resource_owner_secret
+   global resource_owner_key, resource_owner_secret, access_token_url
 
    """
    This gets returned
