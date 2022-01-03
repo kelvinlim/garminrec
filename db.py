@@ -17,9 +17,11 @@ class Db:
         db_pw = os.getenv('db_pw')
         db_host = os.getenv('db_host')
         db_name = os.getenv('db_name')
-        db_dialect = os.getenv('db_dialect')       
-
-        self.url = f"{db_dialect}://{db_user}:{db_pw}@{db_host}/{db_name}"
+        db_dialect = os.getenv('db_dialect')   
+        db_port = os.getenv('db_port')       
+    
+        # add port for cnc2
+        self.url = f"{db_dialect}://{db_user}:{db_pw}@{db_host}:{db_port}/{db_name}"
 
         # create the engine
         self.create_engine()

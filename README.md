@@ -91,3 +91,15 @@ https://python-adv-web-apps.readthedocs.io/en/latest/flask_forms.html
 ## sqlalchemy info
 https://flask-sqlalchemy.palletsprojects.com/en/2.x/models/#
 
+## to enable python38 on rhel7
+https://developers.redhat.com/blog/2018/08/13/install-python3-rhel#tl_dr
+
+1. subscription-manager repos --enable rhel-7-server-optional-rpms \
+  --enable rhel-server-rhscl-7-rpms
+2. yum -y install @development
+3. yum -y install rh-python38
+4. # to enable
+   1. scl enable rh-python36 bash  # got error 
+   2.  (28, 'Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds')
+Trying other mirror.
+
