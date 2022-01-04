@@ -59,6 +59,7 @@ class Db:
             Column('uat', Text), 
             Column('datatype', Text),
             Column('starttime', Integer),
+            Column('offsettime', Integer),
             Column('d', JSON),
             Column('created_at',DateTime),
             Column('updated_at',DateTime),
@@ -148,6 +149,7 @@ class Db:
         add raw data to database
         1. get the type of data from key
         2. need to get the userid and uat for the data
+        3. get the startime
         """
 
         # get datatype
@@ -156,6 +158,23 @@ class Db:
         # get the userid and uat from the first row of data
         userid = jd[datatype][0]['userId']
         uat = jd[datatype][0]['userAccessToken']
+
+        if datatype in ['epochs','stressDetails','dailies','sleeps','pulseox','activities',
+                        'healthSnapshot','allDayRespiration']:
+                         
+            starttime = jd[datatype][0]['startTimeInSeconds']
+            offset = jd[datatype][0]['startTimeOffsetInSeconds']
+            actualtime = starttime + offset
+        
+        elif datatype in ['activityDetails']:
+            starttime = jd[datatype][0]['summary']['startTimeInSeconds']
+            offset = jd[datatype][0]['summary']['startTimeOffsetInSeconds']
+            actualtime = starttime + offset
+
+            pass
+        else:
+            starttime = 0
+            actualtime = 0
 
         # update account info with userid
         self.check_userid( uat, userid)
@@ -167,8 +186,8 @@ class Db:
         json_object = json.dumps(jd, indent=4)
         conn = self.engine.connect()
 
-        sql = f"insert into garmindata (userid, uat, datatype,created_at, d) \
-                value('{userid}','{uat}','{datatype}','{dt_string}','{json_object}');"
+        sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, created_at, d) \
+                value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{dt_string}','{json_object}');"
 
         result = conn.execute(text(sql))
         conn.commit()
