@@ -8,6 +8,11 @@ This app also serves the information required by garmin.
 2. privacy
 3. icon
 
+## excellent oauth python library with interactive code
+
+from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
+
+
 ## docker stuff
 ```
 # build the container
@@ -103,3 +108,15 @@ https://developers.redhat.com/blog/2018/08/13/install-python3-rhel#tl_dr
    2.  (28, 'Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds')
 Trying other mirror.
 
+## trying direct install of python38
+https://tecadmin.net/install-python-3-8-centos/
+
+Got error
+ wget https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz
+--2022-01-03 06:07:00--  https://www.python.org/ftp/python/3.8.12/Python-3.8.12.tgz
+Resolving www.python.org (www.python.org)... 199.232.28.223, 2a04:4e42:44::223
+Connecting to www.python.org (www.python.org)|199.232.28.223|:443...
+
+Had to download on another machine and transfer the tgz file
+
+Then did install
