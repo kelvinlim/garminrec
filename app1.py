@@ -1,9 +1,15 @@
+#! /usr/bin/env python
+
 from flask import Flask, render_template, url_for, send_file, request, Response
 
 import requests_oauthlib
 from dotenv import load_dotenv
 import os
 import json
+
+# database code
+from db import Db
+
 #import requests
 
 # Using OAuth1Session
@@ -15,14 +21,13 @@ request_token_url = 'https://connectapi.garmin.com/oauth-service/oauth/request_t
 base_authorization_url = 'https://connect.garmin.com/oauthConfirm'
 access_token_url = 'https://connectapi.garmin.com/oauth-service/oauth/access_token'
 
+callback_uri = 'https://lnpitask.umn.edu/garminrec/callback'
 
 client_key = os.getenv('client_key')
 client_secret = os.getenv('client_secret')
-
-
+callback_uri = os.getenv('callback_uri')
 
 # setup the db
-from db import Db
 db = Db()
 
 app = Flask(__name__)
@@ -36,7 +41,8 @@ resource_owner_secret = ''
 @app.route("/")
 def index():
 
-   global resource_owner_key, resource_owner_secret, request_token_url,base_authorization_url
+   global resource_owner_key, resource_owner_secret, request_token_url, \
+      base_authorization_url, callback_uri
 
    oauth = OAuth1Session(client_key, client_secret=client_secret)
    fetch_response = oauth.fetch_request_token(request_token_url)
@@ -44,15 +50,22 @@ def index():
    resource_owner_key = fetch_response.get('oauth_token')
    resource_owner_secret = fetch_response.get('oauth_token_secret')
 
-   authorization_url = oauth.authorization_url(base_authorization_url)
+   if callback_uri:
+      # use the callback_uri
+      # how to use explicit callback: https://requests-oauthlib.readthedocs.io/en/latest/api.html?highlight=oauth_callback#requests_oauthlib.OAuth1Session.authorization_url
+      authorization_url = oauth.authorization_url(base_authorization_url, 
+         callback_uri=callback_uri)
+   else:
+      # don't use callback_uri
+      authorization_url = oauth.authorization_url(base_authorization_url)
 
    #print('Please go here and authorize,', authorization_url)
 
    return(
-      "<p>Hello, please go here to authorize Garmin to share your data with lnpitest.</p>"
-      '<a class="button" href="{}">Authorize</a>'.format(
-            authorization_url
-      ))
+   "<p>Hello, please go here to authorize Garmin to share your data with lnpitest.</p>"
+   '<a class="button" href="{}">Authorize</a>'.format(
+      authorization_url
+   ))
 
 @app.route("/privacy")
 def privacy():
@@ -116,7 +129,7 @@ def callback():
 def icon():
    #return send_file(url_for('static', filename='z_150_icon.png'))
    #return send_file('static/z_150_icon.png')
-   mnfile = 'static/UMN_M-wdmk-stack-D2D-maroon-blk.png'
+   mnfile = 'static/goldy_150.png'
    return send_file(mnfile)
 
 ###

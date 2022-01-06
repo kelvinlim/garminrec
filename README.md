@@ -18,6 +18,9 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 # build the container
 sudo docker build -t garminrec .
 
+# to run on production network on lnpitask.umn.edu
+sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped garminrec:latest
+
 # run the container at port 5005
 sudo docker run -d -p 5005:5005 --restart unless-stopped garminrec
 
@@ -120,3 +123,7 @@ Connecting to www.python.org (www.python.org)|199.232.28.223|:443...
 Had to download on another machine and transfer the tgz file
 
 Then did install
+
+## to resize the umn logo to 150x150
+
+https://onlinepngtools.com/resize-png

@@ -14,7 +14,7 @@ ARG db_user=garminuser
 ARG db_pw=SecretPassword
 ARG db_port=3307
 ARG db_host=cnc2.med.umn.edu
-ARG client_secret=6uUOIxYkaVCfzqjvR4mbWwjf398yQy7qRhP
-ARG client_key=c118028e-05f9-4ee6-bea0-e054d4e98cac
+ARG client_key=506debc5-98e8-4049-9d87-7ebb4d78f8afX
+ARG client_secret=J5ziMbeQJiNVuuoqG6IlXZozEdvKaArhhhWX
 
 CMD ["python","app1.py"]
