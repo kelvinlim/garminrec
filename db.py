@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, MetaData, Table, \
 import os
 import dotenv
 from datetime import datetime
+import pytz
 import json
 
 """
@@ -19,7 +20,8 @@ class Db:
         db_name = os.getenv('db_name')
         db_dialect = os.getenv('db_dialect')   
         db_port = os.getenv('db_port')       
-    
+        self.tz = os.getenv('tz')       
+
         # add port for cnc2
         self.url = f"{db_dialect}://{db_user}:{db_pw}@{db_host}:{db_port}/{db_name}"
 
@@ -82,7 +84,7 @@ class Db:
 
         if count==0:
             # insert a new row
-            now = datetime.now()
+            now = datetime.now(pytz.timezone(self.tz))
 
             # dd/mm/YY H:M:S
             dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -109,7 +111,7 @@ class Db:
 
         if count==1:
             # update register value
-            now = datetime.now()
+            now = datetime.now(pytz.timezone(self.tz))
 
             # dd/mm/YY H:M:S
             dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -132,7 +134,7 @@ class Db:
 
         if olduserid == None:
             # update
-            now = datetime.now()
+            now = datetime.now(pytz.timezone(self.tz))
 
             # dd/mm/YY H:M:S
             dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -205,7 +207,7 @@ class Db:
         # check if row exists
         idExists = self.record_exists(uat, datatype, starttime)
 
-        now = datetime.now()
+        now = datetime.now(pytz.timezone(self.tz))
         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # convert python object back into json
