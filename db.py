@@ -144,6 +144,28 @@ class Db:
 
         pass
 
+    def record_exists(self, uat, datatype, starttime):
+        """
+        Checks if a row exists for this uat, datatype and starttime 
+
+        returns
+        0 if no match and id of row if exists
+        """
+        conn = self.engine.connect()
+        sql = f"select id, uat, datatype, starttime from garmindata where uat like '{uat}' and \
+                datatype like '{datatype}' and starttime = {starttime};"
+        result = conn.execute(text(sql))
+
+        for row in result:
+            oldid = row.id
+
+        if oldid == None:
+            id = 0 # return 0
+        else:
+            id = oldid  # return the row number of match
+
+        return id
+
     def add_raw_data(self, jd):
         """
         add raw data to database
@@ -179,6 +201,10 @@ class Db:
         # update account info with userid
         self.check_userid( uat, userid)
 
+
+        # check if row exists
+        idExists = self.record_exists(uat, datatype, starttime)
+
         now = datetime.now()
         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -186,8 +212,12 @@ class Db:
         json_object = json.dumps(jd, indent=4)
         conn = self.engine.connect()
 
-        sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, created_at, d) \
-                value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{dt_string}','{json_object}');"
+        if idExists:
+            # do update 
+            sql = f"update garmindata set updated_at ='{dt_string}', d='{json_object}' where id={idExists};"
+        else:
+            sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, created_at, d) \
+                    value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{dt_string}','{json_object}');"
 
         result = conn.execute(text(sql))
         conn.commit()
