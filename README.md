@@ -127,3 +127,8 @@ Then did install
 ## to resize the umn logo to 150x150
 
 https://onlinepngtools.com/resize-png
+
+## garmin tools for testing endpoints
+
+https://apis.garmin.com/tools/login
+

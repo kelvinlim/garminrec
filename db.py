@@ -128,6 +128,7 @@ class Db:
         conn = self.engine.connect()
         sql = f"select userid, uat from accounts where uat like '{uat}';"
         result = conn.execute(text(sql))
+        olduserid = None
 
         for row in result:
             olduserid = row.userid
@@ -158,13 +159,16 @@ class Db:
                 datatype like '{datatype}' and starttime = {starttime};"
         result = conn.execute(text(sql))
 
+        # initialize
+        oldid = 0
+
         for row in result:
             oldid = row.id
 
-        if oldid == None:
-            id = 0 # return 0
-        else:
+        if oldid:
             id = oldid  # return the row number of match
+        else:
+            id = 0 # return 0 
 
         return id
 

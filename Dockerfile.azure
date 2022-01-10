@@ -1,0 +1,25 @@
+FROM python:3.8
+WORKDIR /project
+ADD . /project
+
+# environment needed for proxy server on ahc servers
+#ENV HTTP_PROXY="http://ctsigate0.ahc.umn.edu:3128" 
+#ENV HTTPS_PROXY="http://ctsigate0.ahc.umn.edu:3128"
+
+# upgrade pip
+RUN pip install --upgrade pip
+
+# install the necessary packages
+RUN pip install -r requirements_docker.txt
+
+ 
+ARG db_name=garmindb
+ARG db_dialect=mysql+pymysql
+ARG db_user=garminuser
+ARG db_pw=c$bZ2m!kRS&F
+#ARG db_host=localhost
+ARG db_host=lnpitest.northcentralus.cloudapp.azure.com
+ARG client_secret=6uUOIxYkaVCfzqjvR4mbWwjf398yQy7qRhP
+ARG client_key=c118028e-05f9-4ee6-bea0-e054d4e98cac
+
+CMD ["python","app1.py"]
