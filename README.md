@@ -27,6 +27,10 @@ sudo docker run -d -p 5005:5005 --restart unless-stopped garminrec
 # to run without detached mode for testing with db running on localhost
 sudo docker run --network=host -p 5005:5005 garminrec
 ```
+
+## developing using a docker container
+https://code.visualstudio.com/docs/containers/debug-python
+
 ## software installation of authlib
 ```
 pip install --upgrade pip
