@@ -61,11 +61,15 @@ def index():
 
    #print('Please go here and authorize,', authorization_url)
 
-   return(
-   "<p>Hello, please go here to authorize Garmin to share your data with lnpitest.</p>"
-   '<a class="button" href="{}">Authorize</a>'.format(
-      authorization_url
-   ))
+   """
+   return "<p>Hello, please click '<a class=\"button\" href=\"{}\">here</a>'.format(authorization_url)  to authorize Garmin to share your data with UMN Psychiatry.</p>"
+   """
+
+   return (
+      "<h2>Thank you for participating in research at the University of Minnesota!</h2>  \
+      <p>Please click on the Authorize link below to give <b>Garmin Connect</b> permission to share your data with UMN Psychiatry.</p>"
+      '<a class="button" href="{}">Click here to Authorize</a>'.format(authorization_url) 
+      )
 
 @app.route("/privacy")
 def privacy():
