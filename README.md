@@ -21,8 +21,8 @@ sudo docker build -t garminrec .
 # to run on production network on lnpitask.umn.edu
 sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped garminrec:latest
 
-# run the container at port 5005
-sudo docker run -d -p 5005:5005 --restart unless-stopped garminrec
+# run the container at port 5005  azure
+sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:1.0
 
 # to run without detached mode for testing with db running on localhost
 sudo docker run --network=host -p 5005:5005 garminrec

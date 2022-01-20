@@ -62,11 +62,14 @@ class Db:
             Column('datatype', Text),
             Column('starttime', Integer),
             Column('offsettime', Integer),
+            Column('started_at', DateTime),
             Column('d', JSON),
             Column('created_at',DateTime),
             Column('updated_at',DateTime),
         )
 
+        # to add column
+        # alter table garmindata add column started_at datetime after offsettime;
         meta.create_all(self.engine)
 
         pass
@@ -214,6 +217,8 @@ class Db:
         now = datetime.now(pytz.timezone(self.tz))
         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
+        actual_dt_string = datetime.fromtimestamp(actualtime)
+
         # convert python object back into json
         json_object = json.dumps(jd, indent=4)
         conn = self.engine.connect()
@@ -222,8 +227,8 @@ class Db:
             # do update 
             sql = f"update garmindata set updated_at ='{dt_string}', d='{json_object}' where id={idExists};"
         else:
-            sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, created_at, d) \
-                    value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{dt_string}','{json_object}');"
+            sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, started_at, created_at, d) \
+                    value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{actual_dt_string}','{dt_string}','{json_object}');"
 
         result = conn.execute(text(sql))
         conn.commit()
