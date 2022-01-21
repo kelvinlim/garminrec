@@ -18,7 +18,7 @@ from sqlalchemy.ext.declarative import declarative_base
 import dotenv
 import pytz
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 # create the url for sqlalchemy
 db_user = os.getenv('db_user')
@@ -27,7 +27,7 @@ db_host = os.getenv('db_host')
 db_name = os.getenv('db_name')
 db_dialect = os.getenv('db_dialect')   
 db_port = os.getenv('db_port')       
-tz = os.getenv('tz')       
+#tz = os.getenv('tz')       
 
 # add port for cnc2
 url = f"{db_dialect}://{db_user}:{db_pw}@{db_host}:{db_port}/{db_name}"
@@ -65,7 +65,8 @@ for row in result:
     print(f"id: {row.id} offset:{row.offsettime} started_at: {row.started_at}")
     # only update if row.offsettime > 0
     if row.offsettime > 0:
-        dt_string = datetime.fromtimestamp(row.offsettime)
+        # force to not apply any timezone - did this on lnpitask but not on lnpitest!
+        dt_string = datetime.fromtimestamp(row.offsettime, timezone.utc)
         #r = session.query(Garmindata).get(row.id)
         #r.started_at = dt_string  # update the string
         row.started_at = dt_string  # update the datetime

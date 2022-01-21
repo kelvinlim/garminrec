@@ -1,3 +1,4 @@
+from time import timezone
 from sqlalchemy import create_engine, MetaData, Table, \
     Column, Integer, String, Text, DateTime, text, JSON
 import os
@@ -217,7 +218,8 @@ class Db:
         now = datetime.now(pytz.timezone(self.tz))
         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
-        actual_dt_string = datetime.fromtimestamp(actualtime)
+        # just give raw time without timezone
+        actual_dt_string = datetime.fromtimestamp(actualtime, timezone.utc )
 
         # convert python object back into json
         json_object = json.dumps(jd, indent=4)
