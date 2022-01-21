@@ -58,6 +58,9 @@ from sqlalchemy.orm import sessionmaker
 Session = sessionmaker(bind = engine)
 session = Session()
 
+# this worked session.query(Garmindata).filter(Garmindata.offsettime > 0).update({Garmindata.started_at:datetime.fromtimestamp(0)})
+# this didn't work session.query(Garmindata).filter(Garmindata.offsettime > 0).update({Garmindata.started_at:datetime.fromtimestamp(Garmindata.offsettime)})
+# error: TypeError: an integer is required (got type InstrumentedAttribute)
 
 result = session.query(Garmindata).all()
 
