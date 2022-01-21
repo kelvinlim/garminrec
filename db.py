@@ -1,6 +1,10 @@
-from time import timezone
+from re import A
+from pytz import timezone
 from sqlalchemy import create_engine, MetaData, Table, \
     Column, Integer, String, Text, DateTime, text, JSON
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
 import os
 import dotenv
 from datetime import datetime
@@ -10,6 +14,35 @@ import json
 """
 see https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_core_creating_table.htm
 """
+
+Base = declarative_base()
+
+# define the tables
+class Garmindata(Base):
+    __tablename__ = 'garmindata'
+    id = Column(Integer, primary_key=True)
+    userid = Column(Text)
+    uat = Column(Text)
+    datatype = Column(Text)
+    starttime = Column(Integer)
+    offsettime = Column(Integer)
+    started_at = Column(DateTime)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)
+    d = Column(JSON)
+
+class Accounts(Base):
+    __tablename__ = 'accounts'
+    id = Column(Integer, primary_key=True)
+    userid = Column(Text)
+    uat = Column(Text)
+    secret = Column(Text)
+    study_id = Column(Text)
+    subject_id = Column(Text)
+    register = Column(Integer)
+    created_at = Column(DateTime)
+    updated_at = Column(DateTime)
+
 class Db:
 
     def __init__(self):
@@ -26,78 +59,63 @@ class Db:
         # add port for cnc2
         self.url = f"{db_dialect}://{db_user}:{db_pw}@{db_host}:{db_port}/{db_name}"
 
-        # create the engine
+        # create the engine and session
         self.create_engine()
-        self.create_tables()  # ok to run it since if tables exists it does nothing
+        self.create_session()
+
+        #self.create_tables()  # ok to run it since if tables exists it does nothing
+        #self.test1()
         pass
 
     def test1(self):
+        # uat exists
+        self.check_uat('37cd115c-b230-4f1a-a38c-7bdd16565ab0','abcd')
+        # uat doesn't exist
         self.check_uat('def','abc')
-        self.check_uat('xyz','abc')
-        self.check_userid('xyz','newid')
+        # change the register setting to 0
+        self.register_uat('def',register=0)
+        # check if userid exists
+        self.check_userid('def','xyz')
+        # check if record exists
+        #self.record_exists()
+        # delete it
+        self.session.query(Accounts).filter(Accounts.uat=='def').delete()
+        self.session.commit()
+        pass
 
     def create_engine(self):
         self.engine = create_engine(self.url, echo = True, future=True)
+
+    def create_session(self):
+        "Create a session"
+        Session = sessionmaker(bind = self.engine)
+        self.session = Session()
     
     def create_tables(self):
         # create the tables
-        meta = MetaData()
-
-        accounts = Table(
-            'accounts', meta,
-            Column('id', Integer, primary_key = True), 
-            Column('userid', Text), 
-            Column('uat', Text), 
-            Column('secret', Text),
-            Column('subject_id', Text),
-            Column('register',Integer),
-            Column('created_at',DateTime),
-            Column('updated_at',DateTime)
-        )
-
-        garmindata = Table(
-            'garmindata', meta, 
-            Column('id', Integer, primary_key = True), 
-            Column('userid', Text),
-            Column('uat', Text), 
-            Column('datatype', Text),
-            Column('starttime', Integer),
-            Column('offsettime', Integer),
-            Column('started_at', DateTime),
-            Column('d', JSON),
-            Column('created_at',DateTime),
-            Column('updated_at',DateTime),
-        )
-
-        # to add column
-        # alter table garmindata add column started_at datetime after offsettime;
-        meta.create_all(self.engine)
-
+        Base.metadata.create_all(self.engine)
         pass
 
     def check_uat(self, uat, secret):
         """
         Checks if a UserAccessToken exists, if it doesn't then creates entry
         """
-        conn = self.engine.connect()
-        sql = f"select count(*) as count from accounts where uat like '{uat}';"
-        result = conn.execute(text(sql))
-
-        for row in result:
-            count = row[0]
+        count = self.session.query(Accounts).filter(Accounts.uat==uat).count()
 
         if count==0:
             # insert a new row
             now = datetime.now(pytz.timezone(self.tz))
-
             # dd/mm/YY H:M:S
             dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
-            sql = f"insert into accounts (uat, secret, created_at) \
-                value('{uat}','{secret}','{dt_string}');"
-
-            result = conn.execute(text(sql))
-            conn.commit()
+            new_uat = Accounts( uat=uat,
+                                secret=secret,
+                                register=1,
+                                created_at=dt_string
+                                )
+            
+            self.session.add(new_uat)
+            self.session.commit()
 
         pass
 
@@ -106,22 +124,19 @@ class Db:
         Checks if uat exists 
         Then sets register to requested value
         """
-        conn = self.engine.connect()
-        sql = f"select count(*) as count from accounts where uat like '{uat}';"
-        result = conn.execute(text(sql))
 
-        for row in result:
-            count = row[0]
+        count = self.session.query(Accounts).filter(Accounts.uat==uat).count()
 
         if count==1:
             # update register value
             now = datetime.now(pytz.timezone(self.tz))
-
             # dd/mm/YY H:M:S
             dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-            sql = f"update accounts set register = {register}, updated_at='{dt_string}' where uat like '{uat}';"
-            result = conn.execute(text(sql))
-            conn.commit()
+
+            row = self.session.query(Accounts).filter(Accounts.uat==uat).one()
+            row.register=register
+            row.updated_at=dt_string
+            self.session.commit()
 
         pass
 
@@ -129,25 +144,17 @@ class Db:
         """
         Checks if a userid exists for this uat, if not then update 
         """
-        conn = self.engine.connect()
-        sql = f"select userid, uat from accounts where uat like '{uat}';"
-        result = conn.execute(text(sql))
-        olduserid = None
+        res = self.session.query(Accounts).filter(Accounts.uat==uat)
 
-        for row in result:
-            olduserid = row.userid
-
-        if olduserid == None:
-            # update
+        if res.count()==1 and res[0].userid == None:
+            # update userid  value
             now = datetime.now(pytz.timezone(self.tz))
-
             # dd/mm/YY H:M:S
             dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-
-            sql = f"update accounts set userid = '{userid}', updated_at='{dt_string}' where uat like '{uat}';"
-
-            result = conn.execute(text(sql))
-            conn.commit()
+            
+            res[0].userid = userid
+            res[0].updated_at = dt_string
+            self.session.commit()
 
         pass
 
@@ -158,22 +165,17 @@ class Db:
         returns
         0 if no match and id of row if exists
         """
-        conn = self.engine.connect()
-        sql = f"select id, uat, datatype, starttime from garmindata where uat like '{uat}' and \
-                datatype like '{datatype}' and starttime = {starttime};"
-        result = conn.execute(text(sql))
 
-        # initialize
-        oldid = 0
+        res = self.session.query(Garmindata).filter(
+            (Garmindata.uat == uat),
+            (Garmindata.datatype == datatype),
+            (Garmindata.starttime == starttime)
+        )
 
-        for row in result:
-            oldid = row.id
-
-        if oldid:
-            id = oldid  # return the row number of match
+        if res.count() == 1:
+            id = res[0].id
         else:
-            id = 0 # return 0 
-
+            id = 0
         return id
 
     def add_raw_data(self, jd):
@@ -219,21 +221,34 @@ class Db:
         dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # just give raw time without timezone
-        actual_dt_string = datetime.fromtimestamp(actualtime, timezone.utc )
+        # pytz.timezone('US/Central')
+        actual_dt_string = datetime.fromtimestamp(actualtime, timezone(self.tz) )
 
         # convert python object back into json
         json_object = json.dumps(jd, indent=4)
-        conn = self.engine.connect()
 
         if idExists:
-            # do update 
+            # do update of existing record
+            res = self.session.query(Accounts).filter(Accounts.id==idExists)
+            res[0].updated_at = dt_string
+            res[0].d = json_object
             sql = f"update garmindata set updated_at ='{dt_string}', d='{json_object}' where id={idExists};"
         else:
+            gd =Garmindata(
+                userid=userid,
+                uat=uat,
+                datatype=datatype,
+                starttime=starttime,
+                offsettime=actualtime,
+                started_at=actual_dt_string,
+                created_at=dt_string,
+                d=json_object
+            )
+            self.session.add(gd)
             sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, started_at, created_at, d) \
                     value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{actual_dt_string}','{dt_string}','{json_object}');"
-
-        result = conn.execute(text(sql))
-        conn.commit()
+            
+        self.session.commit()
 
         pass    
 if __name__ == '__main__':
