@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 
-from flask import Flask, render_template, url_for, send_file, request, Response
+from flask import Flask, render_template, url_for, redirect, send_file, request, Response
+from flask_bootstrap import Bootstrap
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired
 
 import requests_oauthlib
 from dotenv import load_dotenv
@@ -31,6 +35,16 @@ callback_uri = os.getenv('callback_uri')
 db = Db()
 
 app = Flask(__name__)
+
+# Flask-WTF requires an encryption key - the string can be anything
+app.config['SECRET_KEY'] =client_secret
+
+# Flask-Bootstrap requires this line
+Bootstrap(app)
+
+class InfoForm(FlaskForm):
+    studyinfo = StringField('Please enter study information provided by staff: ', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 # initialize globals
 resource_owner_key = ''
@@ -65,15 +79,25 @@ def index():
 
    #print('Please go here and authorize,', authorization_url)
 
-   """
-   return "<p>Hello, please click '<a class=\"button\" href=\"{}\">here</a>'.format(authorization_url)  to authorize Garmin to share your data with UMN Psychiatry.</p>"
-   """
+   form = InfoForm()
+   message = ""
+   if form.validate_on_submit():
+      studyinfo = form.studyinfo.data
+      return redirect( url_for('authorize', studyinfo=studyinfo) )
+ 
 
+   """
    return (
       "<h2>Thank you for participating in research at the University of Minnesota!</h2>  \
       <p>Please click on the Authorize link below to give <b>Garmin Connect</b> permission to share your data with UMN Psychiatry.</p>"
       '<a class="button" href="{}">Click here to Authorize</a>'.format(authorization_url) 
       )
+   """
+   return render_template("index.html", authorization_url=authorization_url)
+
+@app.route("/authorize")
+def authorrize():
+   pass
 
 @app.route("/privacy")
 def privacy():

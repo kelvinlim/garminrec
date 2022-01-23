@@ -1,10 +1,17 @@
 <html>
 
-   
    <body>
-      <h1>Hello</h1>
       
-      Welcome to the LNPI garmin data receiver
+      <img class="right" src="{{ url_for('static', filename='images/UMN_M-wdmk-stack-D2D-maroon-blk.png') }}" alt="UMN">
+
+      <!--  <img class="right" src="static/UMN_M-wdmk-stack-D2D-maroon-blk.png" alt="UMN">   --> 
+
+      <img class="right" src="/static/goldy_150.png" alt="goldy">
+
+      <h2>Thank you for participating in research at the University of Minnesota!</h2>  
+      <p>Please click on the Authorize link below to give <b>Garmin Connect</b> permission to share your data with UMN Psychiatry.</p>
+      <a class="button" href="{{authorization_url}}">Click here to Authorize</a>
+  
       
    </body>
    
