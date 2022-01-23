@@ -50,6 +50,10 @@ def index():
    resource_owner_key = fetch_response.get('oauth_token')
    resource_owner_secret = fetch_response.get('oauth_token_secret')
 
+  
+   #Save the oauth_token in a new row in the accounts table, along with subject_id and study_id
+   db.add_oauth_token(resource_owner_key, '1234', '56789')
+
    if callback_uri:
       # use the callback_uri
       # how to use explicit callback: https://requests-oauthlib.readthedocs.io/en/latest/api.html?highlight=oauth_callback#requests_oauthlib.OAuth1Session.authorization_url
@@ -94,7 +98,7 @@ def callback():
    #get the verifier  
    # do this as part of the callback
    verifier =request.args.get('oauth_verifier')
-   token = request.args.get('oauth_token')
+   oauth_token = request.args.get('oauth_token')
    """
 
    3. Obtain an access token from the OAuth provider. 
@@ -116,7 +120,7 @@ def callback():
    # user access token is oauth_tokens['oauth_token']
 
    # load this info into the accounts table if it doesn't already exist
-   db.check_uat(oauth_tokens['oauth_token'],oauth_tokens['oauth_token_secret'])
+   db.new_uat(oauth_tokens['oauth_token'],oauth_tokens['oauth_token_secret'], oauth_token)
 
    # set register flag 1 (True)
    db.register_uat(oauth_tokens['oauth_token'], register=1)

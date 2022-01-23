@@ -34,6 +34,7 @@ class Garmindata(Base):
 class Accounts(Base):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
+    oauth_token = Column(Text)
     userid = Column(Text)
     uat = Column(Text)
     secret = Column(Text)
@@ -42,6 +43,8 @@ class Accounts(Base):
     register = Column(Integer)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+
+    # alter table accounts add column oauth_token text after id;
 
 class Db:
 
@@ -96,7 +99,29 @@ class Db:
         Base.metadata.create_all(self.engine)
         pass
 
-    def check_uat(self, uat, secret):
+    def new_uat(self, uat, secret, oauth_token):
+        """
+        Update the account with oauth_token with the uat and secret
+        """
+        res = self.session.query(Accounts).filter(Accounts.oauth_token==oauth_token).first()
+
+        if res != None:
+            # update the row
+            now = datetime.now(pytz.timezone(self.tz))
+            # dd/mm/YY H:M:S
+            dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+
+            # update the fields
+            res.uat = uat
+            res.secret = secret
+            res.updated_at = dt_string
+            res.register = 1
+
+            self.session.commit()
+
+        pass
+    
+    def check_uat_pre_study_id(self, uat, secret):
         """
         Checks if a UserAccessToken exists, if it doesn't then creates entry
         """
@@ -125,17 +150,15 @@ class Db:
         Then sets register to requested value
         """
 
-        count = self.session.query(Accounts).filter(Accounts.uat==uat).count()
+        res = self.session.query(Accounts).filter(Accounts.uat==uat)
 
-        if count==1:
+        if res.count==1:
             # update register value
             now = datetime.now(pytz.timezone(self.tz))
             # dd/mm/YY H:M:S
             dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-
-            row = self.session.query(Accounts).filter(Accounts.uat==uat).one()
-            row.register=register
-            row.updated_at=dt_string
+            res[0].register=register
+            res[0].updated_at=dt_string
             self.session.commit()
 
         pass
@@ -178,6 +201,20 @@ class Db:
             id = 0
         return id
 
+    def add_oauth_token(self, oauth_token,study_id, subject_id):
+        "Add oauth_token, subject_id and study_id to accounts table as first step"
+
+        res = self.session.query(Accounts).filter(Accounts.oauth_token==oauth_token).first()
+        if res == None:
+            # add record if it doesn't exist previously
+            ad = Accounts(
+                    oauth_token = oauth_token,
+                    study_id = study_id,
+                    subject_id = subject_id
+            )
+            self.session.add(ad)
+            self.session.commit()
+
     def add_raw_data(self, jd):
         """
         add raw data to database
@@ -218,21 +255,21 @@ class Db:
         idExists = self.record_exists(uat, datatype, starttime)
 
         now = datetime.now(pytz.timezone(self.tz))
-        dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
+        now_dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
         # just give raw time without timezone
         # pytz.timezone('US/Central')
-        actual_dt_string = datetime.fromtimestamp(actualtime, timezone(self.tz) )
+        actual_dt_string = datetime.fromtimestamp(actualtime, timezone(self.tz) ).strftime("%Y-%m-%d %H:%M:%S")
 
         # convert python object back into json
         json_object = json.dumps(jd, indent=4)
 
         if idExists:
             # do update of existing record
-            res = self.session.query(Accounts).filter(Accounts.id==idExists)
-            res[0].updated_at = dt_string
+            res = self.session.query(Garmindata).filter(Garmindata.id==idExists)
+            res[0].updated_at = now_dt_string
             res[0].d = json_object
-            sql = f"update garmindata set updated_at ='{dt_string}', d='{json_object}' where id={idExists};"
+            #sql = f"update garmindata set updated_at ='{now_dt_string}', d='{json_object}' where id={idExists};"
         else:
             gd =Garmindata(
                 userid=userid,
@@ -241,12 +278,12 @@ class Db:
                 starttime=starttime,
                 offsettime=actualtime,
                 started_at=actual_dt_string,
-                created_at=dt_string,
+                created_at=now_dt_string,
                 d=json_object
             )
             self.session.add(gd)
-            sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, started_at, created_at, d) \
-                    value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{actual_dt_string}','{dt_string}','{json_object}');"
+            #sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, started_at, created_at, d) \
+            #        value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{actual_dt_string}','{nowdt_string}','{json_object}');"
             
         self.session.commit()
 
