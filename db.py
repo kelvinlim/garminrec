@@ -87,7 +87,7 @@ class Db:
         pass
 
     def create_engine(self):
-        self.engine = create_engine(self.url, echo = True, future=True)
+        self.engine = create_engine(self.url, echo = True, future=True, pool_pre_ping=True)
 
     def create_session(self):
         "Create a session"
