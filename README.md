@@ -16,10 +16,10 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 ## docker stuff
 ```
 # build the container
-sudo docker build -t garminrec .
+sudo docker build -t garminrec:1.02 .
 
 # to run on production network on lnpitask.umn.edu
-sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped garminrec:1.02
+sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped garminrec:1.03
 
 # run the container at port 5005  azure
 sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:1.02
@@ -136,3 +136,8 @@ https://onlinepngtools.com/resize-png
 
 https://apis.garmin.com/tools/login
 
+## problem with losing connection and needing rollback error
+
+potential solution
+
+https://stackoverflow.com/questions/29755228/sqlalchemy-mysql-lost-connection-to-mysql-server-during-query
