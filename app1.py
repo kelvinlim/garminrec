@@ -194,7 +194,7 @@ def deregistrations():
    # receive data from garmin 
    req = request.get_json()
    db.add_raw_data(req)
-   # set register flag 0 (False)
+   # set register flag 0 (False) in accounts
    uat = req['deregistrations'][0]['userAccessToken']
    db.register_uat(uat, register=0)
    return Response("OK", status=200, mimetype='application/json' )

@@ -139,7 +139,7 @@ class Db:
                 res.uat = uat
                 res.secret = secret
                 res.updated_at = dt_string
-                res.register = 1
+                #res.register = 1
 
                 session.commit()
 
@@ -176,20 +176,23 @@ class Db:
         Then sets register to requested value
         """
 
+        
         with self.session_scope() as session:
 
-            res = session.query(Accounts).filter(Accounts.uat==uat)
+            # not using .first with res[0] gave inconsistent results - would set date but not register
+            res = session.query(Accounts).filter(Accounts.uat==uat).first()
 
-            if res.count==1:
+            if res != None:
                 # update register value
                 now = datetime.now(pytz.timezone(self.tz))
                 # dd/mm/YY H:M:S
                 dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-                res[0].register=register
-                res[0].updated_at=dt_string
+                res.updated_at=dt_string
+                res.register=register
+
                 session.commit()
 
-        pass
+                pass
 
     def check_userid(self, uat, userid):
         """
@@ -291,7 +294,7 @@ class Db:
         # just give raw time without timezone
         # pytz.timezone('US/Central')
         actual_dt_string = datetime.fromtimestamp(actualtime, timezone(self.tz) ).strftime("%Y-%m-%d %H:%M:%S")
-
+ 
         # convert python object back into json
         json_object = json.dumps(jd, indent=4)
 
