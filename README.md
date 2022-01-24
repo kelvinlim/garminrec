@@ -141,3 +141,37 @@ https://apis.garmin.com/tools/login
 potential solution
 
 https://stackoverflow.com/questions/29755228/sqlalchemy-mysql-lost-connection-to-mysql-server-during-query
+
+https://docs.sqlalchemy.org/en/13/core/pooling.html#disconnect-handling-pessimistic
+
+Use of ping
+engine = create_engine("mysql+pymysql://user:pw@host/db", pool_pre_ping=True)
+
+Can also use contextmanager
+https://docs.sqlalchemy.org/en/13/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
+
+```python
+
+from contextlib import contextmanager
+
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
+
+def run_my_program():
+    with session_scope() as session:
+        ThingOne().go(session)
+        ThingTwo().go(session)
+        
+```
+

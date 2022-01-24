@@ -88,7 +88,9 @@ class Db:
 
     def create_engine(self):
         self.engine = create_engine(self.url, echo = True, future=True, pool_pre_ping=True)
-
+        # pool_pre_ping to  deal with disconnection problem
+        # https://docs.sqlalchemy.org/en/13/core/pooling.html#disconnect-handling-pessimistic
+             
     def create_session(self):
         "Create a session"
         Session = sessionmaker(bind = self.engine)
