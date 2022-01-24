@@ -12,7 +12,7 @@ import os
 import json
 
 # database code
-from db import Db
+from db_cm import Db
 
 #import requests
 
@@ -96,7 +96,7 @@ def index():
    return render_template("index.html", authorization_url=authorization_url)
 
 @app.route("/authorize")
-def authorrize():
+def authorize():
    pass
 
 @app.route("/privacy")
