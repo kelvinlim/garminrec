@@ -276,7 +276,26 @@ class Db:
             offset = jd[datatype][0]['summary']['startTimeOffsetInSeconds']
             actualtime = starttime + offset
 
+        elif datatype in ['bodyComps']:
+            starttime = jd[datatype][0]['measurementTimeInSeconds']
+            offset = jd[datatype][0]['measurementTimeOffsetInSeconds']
+            actualtime = starttime + offset
+
+        elif datatype in ['userMetrics']:
+            # just have calendarDate, not TimeInSeconds eg. '2022-02-08'
+            cal_date = jd['userMetrics'][0]['calendarDate']
+            year,month,day = cal_date.split('-')
+            t = datetime(int(year),int(month),int(day))
+            starttime = int(t.timestamp())
+            offset = 0
+            actualtime = starttime + offset
             pass
+
+        elif datatype in ['moveIQActivities']:
+            starttime = jd[datatype][0]['startTimeInSeconds']
+            # offsetInSeconds is -2160000 instead of -21600 so divide by 100
+            offset = jd[datatype][0]['offsetInSeconds']/100
+            actualtime = starttime + offset
         else:
             starttime = 0
             actualtime = 0
