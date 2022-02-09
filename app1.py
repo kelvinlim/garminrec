@@ -182,6 +182,13 @@ def activitydetails():
    db.add_raw_data(req)
    return Response("OK", status=200, mimetype='application/json' )
 
+@app.route('/bodycomp', methods=['POST'])
+def bodycomp():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
 @app.route('/dailies', methods=['POST'])
 def dailies():
    # receive data from garmin 
@@ -208,6 +215,20 @@ def epochs():
 
 @app.route('/healthsnapshot', methods=['POST'])
 def healthsnapshot():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/manactivities', methods=['POST'])
+def manactivities():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/moveiq', methods=['POST'])
+def moveiq():
    # receive data from garmin 
    req = request.get_json()
    db.add_raw_data(req)
@@ -241,6 +262,19 @@ def stress():
    db.add_raw_data(req)
    return Response("OK", status=200, mimetype='application/json' )
 
+@app.route('/thirddailies', methods=['POST'])
+def thirddailies():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
+@app.route('/usermetrics', methods=['POST'])
+def usermetrics():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
 
 # change port
 if __name__ == '__main__':
