@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 import os
 import json
 
+version = "1.05"
+
 # database code
 from db_cm import Db
 
