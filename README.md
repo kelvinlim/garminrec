@@ -22,7 +22,7 @@ sudo docker build -t garminrec:1.05 .
 sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped garminrec:1.05
 
 # run the container at port 5005  azure
-sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:1.02
+sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:1.05
 
 # to run without detached mode for testing with db running on localhost
 sudo docker run --network=host -p 5005:5005 garminrec:1.05

@@ -1,0 +1,5 @@
+.venv
+VENV
+.env
+.vscode
+Dockerfile
