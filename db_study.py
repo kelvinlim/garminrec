@@ -1,9 +1,11 @@
 from re import A
 from pytz import timezone
 from sqlalchemy import create_engine, MetaData, Table, \
-    Column, Integer, String, Text, DateTime, text, JSON
+    Column, Integer, String, Text, DateTime, text, JSON,BIGINT, \
+    Boolean, ForeignKey
+
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship
 from contextlib import contextmanager
 
 import os
@@ -19,6 +21,7 @@ see https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_core_creating_table.htm
 Base = declarative_base()
 
 # define the tables
+
 class Garmindata(Base):
     __tablename__ = 'garmindata'
     id = Column(Integer, primary_key=True)
@@ -31,6 +34,7 @@ class Garmindata(Base):
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
     d = Column(JSON)
+    account_id = Column(Integer, ForeignKey('accounts.id'))
 
 class Accounts(Base):
     __tablename__ = 'accounts'
@@ -44,8 +48,22 @@ class Accounts(Base):
     register = Column(Integer)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+    garmindata = relationship("Garmindata")
+    studi_id = Column(BIGINT, default=1)
 
     # alter table accounts add column oauth_token text after id;
+# class Study(Base):
+#     __tablename__ = 'garmin_study'
+#     id = Column(Integer, primary_key=True)   
+#     label = Column(Text)
+#     description = Column(Text)
+#     study_active = Column(Boolean)
+#     grid_study = Column(Integer)
+#     pi_x500 = Column(Text)
+#     json_data = Column(JSON)
+#     accounts = relationship("Accounts")
+#     # users many to many
+
 
 class Db:
 
@@ -234,6 +252,41 @@ class Db:
                 id = 0
             return id
 
+    def account_exists(self, uat, userid):
+        """
+        Checks if a row exists for this uat and userid in Accounts 
+
+        returns
+        0 if no match and id of row if exists
+        """
+        with self.session_scope() as session:
+            res = session.query(Accounts).filter(
+                (Accounts.uat == uat),
+                (Accounts.userid == userid)
+            )
+
+            if res.count() == 1:
+                id = res[0].id
+            else:
+                id = 0
+            return id
+    
+    def test_account_exists(self):
+        """
+        Test the account_exists method
+        """
+        uat = '11c5b917-64ab-4276-89e7-6947efd2c6e0'
+        userid = '6f568484-0e46-4c74-ba15-72a9dbaea3b1'
+
+        assert self.account_exists(uat,userid) > 0, \
+            f"Expect return primary key, got zero"
+        
+        # change the uat so should return zero
+        uat += 'extra'
+        assert self.account_exists(uat,userid) == 0, \
+            f"No match, so expect zero"        
+        pass
+
     def add_oauth_token(self, oauth_token,study_id, subject_id):
         "Add oauth_token, subject_id and study_id to accounts table as first step"
 
@@ -254,7 +307,8 @@ class Db:
         add raw data to database
         1. get the type of data from key
         2. need to get the userid and uat for the data
-        3. get the startime
+        3. get the foreign key based on userid and uat
+        4. get the starttime
         """
 
         # get datatype
@@ -263,6 +317,8 @@ class Db:
         # get the userid and uat from the first row of data
         userid = jd[datatype][0]['userId']
         uat = jd[datatype][0]['userAccessToken']
+
+        account_fk = self.account_exists(uat, userid)
 
         if datatype in ['epochs','stressDetails','dailies','sleeps','pulseox','activities',
                         'healthSnapshot','allDayRespiration']:
@@ -333,7 +389,8 @@ class Db:
                     offsettime=actualtime,
                     started_at=actual_dt_string,
                     created_at=now_dt_string,
-                    d=json_object
+                    d=json_object,
+                    account_id=account_fk
                 )
                 session.add(gd)
                 #sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, started_at, created_at, d) \
@@ -345,3 +402,5 @@ class Db:
 
 if __name__ == '__main__':
     db = Db()
+    db.test_account_exists()
+    pass
