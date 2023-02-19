@@ -321,7 +321,7 @@ class Db:
         account_fk = self.account_exists(uat, userid)
 
         if datatype in ['epochs','stressDetails','dailies','sleeps','pulseox','activities',
-                        'healthSnapshot','allDayRespiration']:
+                        'healthSnapshot','allDayRespiration','hrv']:
                          
             starttime = jd[datatype][0]['startTimeInSeconds']
             offset = jd[datatype][0]['startTimeOffsetInSeconds']
@@ -370,16 +370,14 @@ class Db:
         # pytz.timezone('US/Central')
         actual_dt_string = datetime.fromtimestamp(actualtime, timezone(self.tz) ).strftime("%Y-%m-%d %H:%M:%S")
  
-        # convert python object back into json
-        json_object = json.dumps(jd, indent=4)
-
         with self.session_scope() as session:
             if idExists:
                 # do update of existing record
                 res = session.query(Garmindata).filter(Garmindata.id==idExists)
                 res[0].updated_at = now_dt_string
-                res[0].d = json_object
+                res[0].d = jd
                 #sql = f"update garmindata set updated_at ='{now_dt_string}', d='{json_object}' where id={idExists};"
+                pass
             else:
                 gd =Garmindata(
                     userid=userid,
@@ -389,13 +387,15 @@ class Db:
                     offsettime=actualtime,
                     started_at=actual_dt_string,
                     created_at=now_dt_string,
-                    d=json_object,
+                    updated_at=now_dt_string,
+                    d=jd,
                     account_id=account_fk
                 )
                 session.add(gd)
                 #sql = f"insert into garmindata (userid, uat, datatype, starttime, offsettime, started_at, created_at, d) \
                 #        value('{userid}','{uat}','{datatype}',{starttime},{actualtime},'{actual_dt_string}','{nowdt_string}','{json_object}');"
-                
+                pass
+            
             session.commit()
 
             pass    

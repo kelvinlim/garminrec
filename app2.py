@@ -222,6 +222,13 @@ def healthsnapshot():
    db.add_raw_data(req)
    return Response("OK", status=200, mimetype='application/json' )
 
+@app.route('/hrvsummary', methods=['POST'])
+def hrvsummary():
+   # receive data from garmin 
+   req = request.get_json()
+   db.add_raw_data(req)
+   return Response("OK", status=200, mimetype='application/json' )
+
 @app.route('/manactivities', methods=['POST'])
 def manactivities():
    # receive data from garmin 
