@@ -1,7 +1,9 @@
 from re import A
 from pytz import timezone
 from sqlalchemy import create_engine, MetaData, Table, \
-    Column, Integer, String, Text, DateTime, text, JSON
+    Column, Integer, String, Text, DateTime, text, JSON, \
+    BIGINT
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from contextlib import contextmanager
@@ -44,6 +46,7 @@ class Accounts(Base):
     register = Column(Integer)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+    #studi_id = Column(BIGINT, default=1)
 
     # alter table accounts add column oauth_token text after id;
 

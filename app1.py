@@ -14,7 +14,9 @@ import json
 version = "1.05"
 
 # database code
-from db_cm import Db
+#from db_cm import Db
+# switch to new database structure with Study
+from db_study import Db
 
 #import requests
 
