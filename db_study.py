@@ -376,8 +376,7 @@ class Db:
                 res = session.query(Garmindata).filter(Garmindata.id==idExists)
                 res[0].updated_at = now_dt_string
                 res[0].d = jd
-                #sql = f"update garmindata set updated_at ='{now_dt_string}', d='{json_object}' where id={idExists};"
-                pass
+                #sql = f"update garmindata set updated_at ='{now_dt_string}', d='{json_object}' where id={idExists};"                pass
             else:
                 gd =Garmindata(
                     userid=userid,
