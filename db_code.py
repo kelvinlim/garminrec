@@ -250,10 +250,12 @@ class Db:
             
             if res:
                 id = res.id
+                register = res.register
             else:
                 id = 0
+                register = 0
 
-            return id, res.register
+            return id, register
 
     def check_userid(self, uat, userid):
         """
