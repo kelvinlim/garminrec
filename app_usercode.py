@@ -62,17 +62,21 @@ def index():
    message = ""
    if form.validate_on_submit():
       usercode = form.usercode.data
-      res = db.entry_code_exists(usercode)
-      if res:
+      id, register = db.entry_code_exists(usercode)
+      if id and register == 0:
          # This is good entry code so get setup to go to garmin site
-        
+         # the token exists and register=0
          # empty the form field
          form.usercode.data = ""
       
          # redirect the browser to another route and template
          return redirect( url_for('goto_garmin', usercode=usercode) )
       else:
-         message = "That usercode is not in our database."
+         if id and register:
+            message = f"usercode {usercode} exists but is already registered."
+         elif  id == 0:
+            message = f"usercode {usercode} is not valid. Please recheck code."
+
 
    return render_template('index_usercode.html', form=form, message=message)
    
