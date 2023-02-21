@@ -40,6 +40,7 @@ class Accounts(Base):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
     oauth_token = Column(Text)
+    entry_code = Column(Text)
     userid = Column(Text)
     uat = Column(Text)
     secret = Column(Text)
@@ -206,11 +207,30 @@ class Db:
                 # dd/mm/YY H:M:S
                 dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
                 res.updated_at=dt_string
+                res.started_at=dt_string
                 res.register=register
 
                 session.commit()
 
                 pass
+
+    def entry_code_exists(self, entry_code):
+        """
+        Checks if entrycode exists 
+        returns id, else 0
+        """
+
+        with self.session_scope() as session:
+
+            # not using .first with res[0] gave inconsistent results - would set date but not register
+            res = session.query(Accounts).filter(Accounts.entry_code==entry_code).first()
+        
+            if res:
+                id = res.id
+            else:
+                id = 0
+
+            return id
 
     def check_userid(self, uat, userid):
         """
