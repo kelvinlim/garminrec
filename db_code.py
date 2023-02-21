@@ -237,30 +237,23 @@ class Db:
 
                 pass
 
-    def entry_code_exists(self, entry_code, check_if_registered=True):
+    def entry_code_exists(self, entry_code):
         """
         Checks if entrycode exists 
-        returns id, else 0
+        returns id, else 0, register status
         """
 
         with self.session_scope() as session:
 
             # not using .first with res[0] gave inconsistent results - would set date but not register
+            res = session.query(Accounts).filter(Accounts.entry_code==entry_code).first()
             
-            if check_if_registered:
-                res = session.query(Accounts).filter(
-                    Accounts.entry_code==entry_code,
-                    Accounts.register==1
-                    ).first()
-            else:
-                res = session.query(Accounts).filter(Accounts.entry_code==entry_code).first()
-        
             if res:
                 id = res.id
             else:
                 id = 0
 
-            return id
+            return id, res.register
 
     def check_userid(self, uat, userid):
         """
@@ -270,7 +263,7 @@ class Db:
         with self.session_scope() as session:
             res = session.query(Accounts).filter(Accounts.uat==uat)
 
-            if res.count()==1 and res[0].userid == None:
+            if res.count()==1 and not res[0].userid:
                 # update userid  value
                 now = datetime.now(pytz.timezone(self.tz))
                 # dd/mm/YY H:M:S
