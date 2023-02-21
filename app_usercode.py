@@ -73,9 +73,9 @@ def index():
          return redirect( url_for('goto_garmin', usercode=usercode) )
       else:
          if id and register:
-            message = f"usercode {usercode} exists but is already registered."
+            message = f"usercode {usercode} exists but has already been registered."
          elif  id == 0:
-            message = f"usercode {usercode} is not valid. Please recheck code."
+            message = f"usercode {usercode} is not valid. Please recheck entry."
 
 
    return render_template('index_usercode.html', form=form, message=message)
