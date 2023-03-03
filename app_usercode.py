@@ -63,7 +63,7 @@ def index():
    if form.validate_on_submit():
       usercode = form.usercode.data
       id, register = db.entry_code_exists(usercode)
-      if id and register == 0:
+      if id and not register:
          # This is good entry code so get setup to go to garmin site
          # the token exists and register=0
          # empty the form field
@@ -123,7 +123,8 @@ def goto_garmin(usercode):
    global resource_owner_key, resource_owner_secret, request_token_url, \
    base_authorization_url, callback_uri
    
-   account_id = db.entry_code_exists(usercode)
+   # returns a tuple so select first element
+   account_id, register = db.entry_code_exists(usercode)
 
    oauth = OAuth1Session(client_key, client_secret=client_secret)
    fetch_response = oauth.fetch_request_token(request_token_url)
