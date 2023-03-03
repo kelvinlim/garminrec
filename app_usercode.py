@@ -75,6 +75,51 @@ def index():
          # empty the form field
          form.usercode.data = ""
       
+         oauth = OAuth1Session(client_key, client_secret=client_secret)
+         fetch_response = oauth.fetch_request_token(request_token_url)
+
+         resource_owner_key = fetch_response.get('oauth_token')
+         resource_owner_secret = fetch_response.get('oauth_token_secret')
+
+         #Save the oauth_token in the account with id
+         db.update_oauth_token_id(id, resource_owner_key)
+
+         if callback_uri:
+            # use the callback_uri
+            # how to use explicit callback: https://requests-oauthlib.readthedocs.io/en/latest/api.html?highlight=oauth_callback#requests_oauthlib.OAuth1Session.authorization_url
+            authorization_url = oauth.authorization_url(base_authorization_url, 
+               callback_uri=callback_uri)
+         else:
+            # don't use callback_uri
+            authorization_url = oauth.authorization_url(base_authorization_url)
+
+         return redirect(authorization_url,code=302)
+      else:
+         if id and register:
+            message = f"usercode {usercode} exists but has already been registered."
+         elif  id == 0:
+            message = f"usercode {usercode} is not valid. Please recheck entry."
+
+
+   return render_template('index_usercode.html', form=form, message=message)
+   
+@app.route("/oldindex", methods=['GET', 'POST'])
+def oldindex():
+
+   global resource_owner_key, resource_owner_secret, request_token_url, \
+      base_authorization_url, callback_uri
+
+   form = UserCodeForm()
+   message = ""
+   if form.validate_on_submit():
+      usercode = form.usercode.data
+      id, register = db.entry_code_exists(usercode)
+      if id and not register:
+         # This is good entry code so get setup to go to garmin site
+         # the token exists and register=0
+         # empty the form field
+         form.usercode.data = ""
+      
          # redirect the browser to another route and template
          # return redirect( url_for('/garminrec/goto_garmin', usercode=usercode) )
          return redirect( url_for('goto_garmin', usercode=usercode, _external=True) )
