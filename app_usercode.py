@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 import os
 import json
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 version = "2.0"
 
 # database code
@@ -29,6 +31,7 @@ access_token_url = 'https://connectapi.garmin.com/oauth-service/oauth/access_tok
 
 callback_uri = 'https://lnpitask.umn.edu/garminrec/callback'
 
+##TODO use python_dotenv to set these
 client_key = os.getenv('client_key')
 client_secret = os.getenv('client_secret')
 callback_uri = os.getenv('callback_uri')
@@ -37,6 +40,9 @@ callback_uri = os.getenv('callback_uri')
 db = Db()
 
 app = Flask(__name__)
+
+# for dealing with reverse proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_host=1)
 
 # Flask-WTF requires an encryption key - the string can be anything
 app.config['SECRET_KEY'] =client_secret
@@ -70,7 +76,8 @@ def index():
          form.usercode.data = ""
       
          # redirect the browser to another route and template
-         return redirect( url_for('goto_garmin', usercode=usercode) )
+         # return redirect( url_for('/garminrec/goto_garmin', usercode=usercode) )
+         return redirect( url_for('goto_garmin', usercode=usercode, _external=True) )
       else:
          if id and register:
             message = f"usercode {usercode} exists but has already been registered."
@@ -338,6 +345,7 @@ def usermetrics():
 # change port
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5005)
+    #app.run(debug=True, host="localhost", port=5005)
     
     
     

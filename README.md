@@ -19,7 +19,7 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 sudo docker build -t garminrec:1.05 .
 
 # to run on production network on lnpitask.umn.edu
-sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped garminrec:2.0
+sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.0
 
 # run the container at port 5005  azure
 sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:2.0
