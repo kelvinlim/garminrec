@@ -16,16 +16,16 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 ## docker stuff
 ```
 # build the container
-sudo docker build -t garminrec:1.05 .
+sudo docker build -t garminrec:2.1 .
 
 # to run on production network on lnpitask.umn.edu
-sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.0
+sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.1
 
 # run the container at port 5005  azure
-sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:2.0
+sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:2.1
 
 # to run without detached mode for testing with db running on localhost
-sudo docker run --network=host -p 5005:5005 garminrec:2.0
+sudo docker run --network=host -p 5005:5005 garminrec:2.1
 ```
 
 ## developing using a docker container

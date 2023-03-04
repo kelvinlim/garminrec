@@ -13,7 +13,7 @@ import json
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-version = "2.0"
+version = "2.1"
 
 # database code
 from db_code import Db

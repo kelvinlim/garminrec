@@ -46,8 +46,8 @@ class Accounts(Base):
     userid = Column(Text)
     uat = Column(Text)
     secret = Column(Text)
-    study_id = Column(Text)
-    subject_id = Column(Text)
+    study_info = Column(Text)
+    subject_info = Column(Text)
     register = Column(Integer)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
@@ -331,8 +331,8 @@ class Db:
             f"No match, so expect zero"        
         pass
 
-    def add_oauth_token(self, oauth_token,study_id, subject_id):
-        "Add oauth_token, subject_id and study_id to accounts table as first step"
+    def add_oauth_token(self, oauth_token,study_info, subject_info):
+        "Add oauth_token, subject_info and study_info to accounts table as first step"
 
         with self.session_scope() as session:
             res = session.query(Accounts).filter(Accounts.oauth_token==oauth_token).first()
@@ -340,8 +340,8 @@ class Db:
                 # add record if it doesn't exist previously
                 ad = Accounts(
                         oauth_token = oauth_token,
-                        study_id = study_id,
-                        subject_id = subject_id
+                        study_info = study_info,
+                        subject_info = subject_info
                 )
                 session.add(ad)
                 session.commit()
