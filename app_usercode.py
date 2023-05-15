@@ -16,7 +16,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 version = "2.1"
 
 # database code
-from db_code import Db
+from db_code2 import Db
 
 #import requests
 
