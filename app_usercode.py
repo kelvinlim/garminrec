@@ -13,7 +13,7 @@ import json
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-version = "2.1"
+version = "2.3"
 
 # database code
 from db_code2 import Db
@@ -58,6 +58,12 @@ class UserCodeForm(FlaskForm):
 resource_owner_key = ''
 resource_owner_secret = ''
 
+# setup the proxies
+proxies = {
+  'http': os.getenv('proxy_http'),
+  'https': os.getenv('proxy_https')
+}
+
 @app.route("/", methods=['GET', 'POST'])
 def index():
 
@@ -76,7 +82,7 @@ def index():
          form.usercode.data = ""
       
          oauth = OAuth1Session(client_key, client_secret=client_secret)
-         fetch_response = oauth.fetch_request_token(request_token_url)
+         fetch_response = oauth.fetch_request_token(request_token_url, proxies=proxies)
 
          resource_owner_key = fetch_response.get('oauth_token')
          resource_owner_secret = fetch_response.get('oauth_token_secret')
@@ -179,7 +185,7 @@ def goto_garmin(usercode):
    account_id, register = db.entry_code_exists(usercode)
 
    oauth = OAuth1Session(client_key, client_secret=client_secret)
-   fetch_response = oauth.fetch_request_token(request_token_url)
+   fetch_response = oauth.fetch_request_token(request_token_url, proxies=proxies)
 
    resource_owner_key = fetch_response.get('oauth_token')
    resource_owner_secret = fetch_response.get('oauth_token_secret')
