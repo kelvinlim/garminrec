@@ -249,7 +249,7 @@ def callback():
                            resource_owner_secret=resource_owner_secret,
                            verifier=verifier)
    
-   oauth_tokens = oauth.fetch_access_token(access_token_url)
+   oauth_tokens = oauth.fetch_access_token(access_token_url, proxies=proxies)
    
    # user access token is oauth_tokens['oauth_token']
 
