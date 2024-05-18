@@ -276,6 +276,7 @@ class Db:
                 session.commit()
 
             pass
+        return userid
 
     def record_exists(self, uat, datatype, starttime):
         """
@@ -508,7 +509,7 @@ class Db:
                 self.check_userid( uat, userid)
 
 
-                # check if row exists
+                # check if row exists, returns 0 if it doesn't exist
                 idExists = self.record_exists(uat, datatype, starttime)
 
                 now = datetime.now(pytz.timezone(self.tz))
@@ -524,7 +525,7 @@ class Db:
                 newdata[datatype] = [ jdata ]
                 
                 with self.session_scope() as session:
-                    if idExists:
+                    if idExists > 0:
                         # do update of existing record
                         res = session.query(Garmindata).filter(Garmindata.id==idExists)
                         res[0].updated_at = now_dt_string
