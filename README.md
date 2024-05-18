@@ -31,6 +31,22 @@ sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminre
 sudo docker run --network=host -p 5005:5005 garminrec:2.2
 ```
 
+## debugging containers
+
+for nginx 1e6a
+for garminrec d0c3
+
+export nginx=1e6a
+export garmin=d0c3
+
+sudo docker exec -it 1e6a /bin/bash
+
+Copy file 
+sudo docker cp $nginx:/etc/nginx/conf.d/default.conf .
+
+Inspect container
+sudo docker inspect $garmin
+
 ## developing using a docker container
 https://code.visualstudio.com/docs/containers/debug-python
 
