@@ -298,7 +298,7 @@ class Db:
                 id = 0
             return id
 
-    def account_exists(self, uat):
+    def account_exists(self, uat, userid):
         """
         Checks if a row exists for this uat  in Accounts 
 
@@ -306,9 +306,9 @@ class Db:
         0 if no match and id of row if exists
         """
         with self.session_scope() as session:
-            res = session.query(Accounts).filter(
-                (Accounts.uat == uat)
-            )
+            res = session.query(Accounts).filter(Accounts.uat == uat
+                                                 ).filter(Accounts.userid == userid)
+            
 
             if res.count() == 1:
                 id = res[0].id
@@ -467,7 +467,7 @@ class Db:
                 userid = jdata['userId']
                 uat = jdata['userAccessToken']
 
-                account_fk = self.account_exists(uat)
+                account_fk = self.account_exists(uat, userid)
 
                 if datatype in ['epochs','stressDetails','dailies','sleeps','pulseox','activities',
                                 'healthSnapshot','allDayRespiration','hrv']:
