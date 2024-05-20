@@ -13,8 +13,6 @@ import json
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-version = "2.3"
-
 # database code
 from db_code2 import Db
 
@@ -38,6 +36,10 @@ callback_uri = os.getenv('callback_uri')
 
 # setup the db
 db = Db()
+
+# Define the version information
+__version_info__ = ('2', '4', '1')
+__version__ = '.'.join(__version_info__)
 
 app = Flask(__name__)
 
@@ -68,10 +70,12 @@ proxies = {
 def index():
 
    global resource_owner_key, resource_owner_secret, request_token_url, \
-      base_authorization_url, callback_uri
+      base_authorization_url, callback_uri, __version__
 
    form = UserCodeForm()
    message = ""
+   version = __version__
+   
    if form.validate_on_submit():
       usercode = form.usercode.data
       id, register = db.entry_code_exists(usercode)
@@ -107,7 +111,7 @@ def index():
             message = f"usercode {usercode} is not valid. Please recheck entry."
 
 
-   return render_template('index_usercode.html', form=form, message=message)
+   return render_template('index_usercode.html', form=form, message=message, version=version)
    
 @app.route("/oldindex", methods=['GET', 'POST'])
 def oldindex():
@@ -395,8 +399,8 @@ def usermetrics():
 
 # change port
 if __name__ == '__main__':
-    app.run(debug=False, host="0.0.0.0", port=5005)
-    #app.run(debug=True, host="localhost", port=5005)
+   app.run(debug=False, host="0.0.0.0", port=5005)
+   #app.run(debug=True, port=5005)
     
     
     
