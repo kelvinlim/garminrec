@@ -16,36 +16,38 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 ## docker stuff
 ```
 # build the container
-sudo docker build -t garminrec:2.3 .
+sudo docker build -t garminrec:2.4 .
 
 # to run on production network on lnpitask.umn.edu
-sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.3
+sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.4
 
 # view the logs
 sudo docker logs -f --tail 10 <container_id>
 
 # run the container at port 5005  azure
-sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:2.3
+sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:2.4
 
 # to run without detached mode for testing with db running on localhost
-sudo docker run --network=host -p 5005:5005 garminrec:2.2
+sudo docker run --network=host -p 5005:5005 garminrec:2.4
 ```
 
 ## debugging containers
 
-for nginx 1e6a
-for garminrec d0c3
-
 export nginx=1e6a
-export garmin=d0c3
+export garmin=d584
 
-sudo docker exec -it 1e6a /bin/bash
+sudo docker exec -it $nginx /bin/bash
 
 Copy file 
-sudo docker cp $nginx:/etc/nginx/conf.d/default.conf .
+sudo docker cp default_new.conf $nginx:/etc/nginx/conf.d/default.conf 
+
+sudo docker cp  $nginx:/etc/nginx/conf.d/default.conf default_working.conf
 
 Inspect container
 sudo docker inspect $garmin
+
+check logs 
+sudo docker logs --follow --since 2024-05-18 $nginx
 
 ## developing using a docker container
 https://code.visualstudio.com/docs/containers/debug-python
