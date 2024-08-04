@@ -16,10 +16,10 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 ## docker stuff
 ```
 # build the container
-sudo docker build -t garminrec:2.4 .
+sudo docker build -t garminrec:2.5 .
 
 # to run on production network on lnpitask.umn.edu
-sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.4
+sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.5
 
 # view the logs
 sudo docker logs -f --tail 10 <container_id>

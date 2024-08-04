@@ -298,12 +298,15 @@ class Db:
                 id = 0
             return id
 
-    def account_exists(self, uat, userid):
+    def account_exists(self, uat, userid, defaultid=1):
         """
         Checks if a row exists for this uat  in Accounts 
 
         returns
-        0 if no match and id of row if exists
+        defaultid if no match and id of row if exists
+        
+        defaultid of 1 allows data to be saved instead of rejected and causing
+        garmin to eventually disable the sending of data because of failures.
         """
         with self.session_scope() as session:
             res = session.query(Accounts).filter(Accounts.uat == uat
@@ -313,7 +316,7 @@ class Db:
             if res.count() == 1:
                 id = res[0].id
             else:
-                id = 0
+                id = defaultid
             return id
     
     def test_account_exists(self):
