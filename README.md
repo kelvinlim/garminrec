@@ -24,6 +24,8 @@ sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  g
 # view the logs
 sudo docker logs -f --tail 10 <container_id>
 
+sudo docker logs -f --since 3h d584  | tee log_garminrec_20240804_0748
+
 # run the container at port 5005  azure
 sudo docker run -d -p 5005:5005 --network=host --restart unless-stopped garminrec:2.4
 
