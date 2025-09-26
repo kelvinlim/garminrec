@@ -18,6 +18,25 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 # build the container
 sudo docker build -t garminrec:2.5 .
 
+# to create latest
+sudo podman build -t garminrec:latest .
+# this matches the container referred to in 
+#  /etc/systemd/system/container-garminrec.service
+
+sudo systemctl status container-garminrec.service
+
+sudo systemctl start container-garminrec.service
+
+
+# run with podman in foreground for testing
+sudo podman run  -p 5005:5005 --restart unless-stopped  garminrec:latest
+
+# run detacheed
+sudo podman run -d -p 5005:5005 --restart unless-stopped  garminrec:latest
+
+
+
+
 # to run on production network on lnpitask.umn.edu
 sudo docker run -d -p 5005:5005 --network=production --restart unless-stopped  garminrec:2.5
 
