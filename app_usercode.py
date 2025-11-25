@@ -10,6 +10,17 @@ import requests_oauthlib
 from dotenv import load_dotenv
 import os
 import json
+import logging
+import traceback
+
+# Configure logging
+logging.basicConfig(
+    filename='app_errors.log',
+    level=logging.ERROR,
+    format='%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]',
+    force=True
+)
+
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -285,117 +296,197 @@ def icon():
 @app.route('/activities', methods=['POST'])
 def activities():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in activities: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/activitydetails', methods=['POST'])
 def activitydetails():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in activitydetails: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/bodycomp', methods=['POST'])
 def bodycomp():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in bodycomp: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/dailies', methods=['POST'])
 def dailies():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in dailies: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/deregistrations', methods=['POST'])
 def deregistrations():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   # set register flag 0 (False) in accounts
-   uat = req['deregistrations'][0]['userAccessToken']
-   db.register_uat(uat, register=0)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      # set register flag 0 (False) in accounts
+      uat = req['deregistrations'][0]['userAccessToken']
+      db.register_uat(uat, register=0)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in deregistrations: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/epochs', methods=['POST'])
 def epochs():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in epochs: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/healthsnapshot', methods=['POST'])
 def healthsnapshot():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in healthsnapshot: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/hrvsummary', methods=['POST'])
 def hrvsummary():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in hrvsummary: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/manactivities', methods=['POST'])
 def manactivities():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in manactivities: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/moveiq', methods=['POST'])
 def moveiq():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in moveiq: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/pulseox', methods=['POST'])
 def pulseox():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in pulseox: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/respiration', methods=['POST'])
 def respiration():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in respiration: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/sleeps', methods=['POST'])
 def sleeps():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in sleeps: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/stress', methods=['POST'])
 def stress():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in stress: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/thirddailies', methods=['POST'])
 def thirddailies():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in thirddailies: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 @app.route('/usermetrics', methods=['POST'])
 def usermetrics():
    # receive data from garmin 
-   req = request.get_json()
-   db.add_raw_data(req)
-   return Response("OK", status=200, mimetype='application/json' )
+   try:
+      req = request.get_json()
+      db.add_raw_data(req)
+      return Response("OK", status=200, mimetype='application/json' )
+   except Exception as e:
+      logging.error(f"Error in usermetrics: {str(e)}")
+      logging.error(traceback.format_exc())
+      return Response("OK", status=200, mimetype='application/json' )
 
 # change port
 if __name__ == '__main__':
