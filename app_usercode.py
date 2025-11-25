@@ -49,7 +49,7 @@ callback_uri = os.getenv('callback_uri')
 db = Db()
 
 # Define the version information
-__version_info__ = ('2', '4', '1')
+__version_info__ = ('3', '0', '0')
 __version__ = '.'.join(__version_info__)
 
 app = Flask(__name__)
