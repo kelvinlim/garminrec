@@ -34,7 +34,8 @@ sudo podman run  -p 5005:5005 --restart unless-stopped  garminrec:latest
 # run detacheed
 sudo podman run -d -p 5005:5005 --restart unless-stopped  garminrec:latest
 
-
+# create the systemctl file
+sudo podman generate systemd --new --files --name garminrec
 
 
 # to run on production network on lnpitask.umn.edu
