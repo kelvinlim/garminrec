@@ -19,7 +19,7 @@ from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 sudo docker build -t garminrec:2.5 .
 
 # to create latest
-sudo podman build -t garminrec:latest .
+sudo podman build -t garminrec:3.0  .
 # this matches the container referred to in 
 #  /etc/systemd/system/container-garminrec.service
 
