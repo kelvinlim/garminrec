@@ -1,5 +1,56 @@
 # garminrec
 
+Podman + systemd deployment
+---------------------------
+
+Quick commands to build the image and deploy it under `systemd` using the simple
+`.service` approach (works on RHEL9). These steps create the container, generate
+the systemd unit, install it, and enable/start the service. Adjust ports and
+paths as needed (example uses port `5005` and image `garminrec:3.0`).
+
+- Build the image:
+
+```bash
+sudo podman build -t garminrec:3.0 .
+```
+
+- Start a temporary container (records chosen run options) and generate a
+    `.service` from it:
+
+```bash
+sudo podman create --name garminrec_service -p 5005:5005 garminrec:3.0
+sudo podman generate systemd --name garminrec_service --files
+```
+
+- Move the generated unit into systemd, reload units, enable and start it:
+
+```bash
+sudo mv container-garminrec_service.service /etc/systemd/system/container-garmin.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now container-garmin.service
+sudo systemctl status container-garmin.service
+sudo journalctl -u container-garmin.service -f
+```
+
+- Notes:
+    - Podman may print a deprecation suggestion for Quadlets; the generated
+        `.service` approach is functional and simple and will manage the container
+        via systemd.
+    - If systemd reports inotify/watch errors ("No space left on device"),
+        increase the inotify watch limit temporarily:
+
+```bash
+sudo sysctl -w fs.inotify.max_user_watches=524288
+echo 'fs.inotify.max_user_watches=524288' | sudo tee /etc/sysctl.d/99-inotify.conf
+sudo sysctl --system
+```
+
+    - For a more modern RHEL9-native approach, consider Quadlets: a
+        `garminrec.container` quadlet can be created and installed under
+        `/etc/systemd/system/` and enabled with `systemctl enable --now garminrec.container`.
+
+This README below contains development notes and additional podman examples.
+
 This is python flask app to receive data from Garmin Connect 
 using their push notification.
 
@@ -13,13 +64,49 @@ This app also serves the information required by garmin.
 from https://requests-oauthlib.readthedocs.io/en/latest/oauth1_workflow.html
 
 
-## docker stuff
+## podman stuff
+ 
+ 20251126
+ ```
+ # create temp container
+sudo podman create --name garminrec_temp -p 5005:5005 garminrec:3.0
+sudo podman generate systemd --name garminrec_temp --files
+sudo podman rm garminrec_temp
+
+# install and enable
+sudo mv container-garminrec_temp.service /etc/systemd/system/container-garminrec.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now container-garminrec.service
+sudo systemctl status container-garminrec.service
+sudo journalctl -u container-garminrec.service -f
+
+# or use quadlet
+# move into systemd units and enable
+sudo mv garminrec.container /etc/systemd/system/garminrec.container
+sudo systemctl daemon-reload
+sudo systemctl enable --now garminrec.container
+
+# check status and logs
+sudo systemctl status garminrec.container
+sudo journalctl -u garminrec.container -f
+
+```
+
+
 ```
 # build the container
 sudo docker build -t garminrec:2.5 .
 
 # to create latest
 sudo podman build -t garminrec:3.0  .
+
+# to test interactive in terminal
+sudo podman -it -p 5005:5005 garminrec:3.0
+
+# to create the systemctl file
+sudo podman generate systemd --new --files --name garminrec garminrec:3.0
+sudo podman generate systemd --new --files --name garminrec
+
 # this matches the container referred to in 
 #  /etc/systemd/system/container-garminrec.service
 
